@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TTX Scoping Questionnaire — VanRein Compliance</title>
+<title>VanRein Compliance TTX Questionnaire</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -666,7 +666,7 @@
   <div class="action-bar">
     <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
     <button class="btn btn-clipboard" onclick="copyToClipboard()" id="copy-btn">&#128203; Copy Responses</button>
-    <button class="btn btn-primary" id="submit-btn" onclick="submitForm()">Submit to VanRein ↗</button>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitForm()">Submit to VanRein Compliance ↗</button>
   </div>
 
   <div class="banner success" id="success-banner">
@@ -937,7 +937,7 @@ function clearForm() {
   document.getElementById('success-banner').style.display='none';
   document.getElementById('copy-banner').style.display='none';
   const sb=document.getElementById('submit-btn');
-  sb.textContent='Submit to VanRein ↗'; sb.disabled=false;
+  sb.textContent='Submit to VanRein Compliance ↗'; sb.disabled=false;
   document.getElementById('copy-btn').textContent='📋 Copy Responses';
   selectedDates=[]; timeHour=''; timeMin=''; timeAmPm=''; timeTz=''; locClear();
   initCal(); updateTimeDisplay();
