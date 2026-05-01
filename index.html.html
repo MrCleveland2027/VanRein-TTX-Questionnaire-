@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTX Scoping Questionnaire — VanRein Compliance</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand: #185FA5; --brand-light: #E6F1FB; --brand-mid: #378ADD;
+    --accent: #0F6E56; --accent-light: #E1F5EE;
+    --danger: #A32D2D; --danger-light: #FCEBEB;
+    --amber: #BA7517; --amber-light: #FAEEDA;
+    --gray-mid: #5F5E5A; --gray-light: #F1EFE8; --gray-border: #D3D1C7;
+    --text-primary: #1a1a18; --text-secondary: #5F5E5A;
+    --bg-primary: #ffffff; --bg-secondary: #f7f6f3;
+    --border: #D3D1C7; --border-light: rgba(0,0,0,0.1);
+    --radius-md: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text-primary: #f0efe8; --text-secondary: #9e9c94;
+      --bg-primary: #1e1e1c; --bg-secondary: #282825;
+      --border: #3a3a36; --border-light: rgba(255,255,255,0.1);
+      --gray-light: #2a2a27; --gray-mid: #9e9c94;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    line-height: 1.5;
+  }
+
+  .page-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .qs-header {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 1.75rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .shield-wrap { width: 36px; height: 36px; flex-shrink: 0; }
+  .firm-name { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); }
+  .qs-title { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+  .qs-subtitle { font-size: 14px; color: var(--text-secondary); }
+  .star { color: var(--danger); }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 1.25rem; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .progress-pct { color: var(--brand); font-weight: 600; }
+  .progress-track { display: flex; gap: 4px; }
+  .progress-step { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.3s; cursor: pointer; }
+  .progress-step:hover { background: var(--brand-mid); opacity: 0.7; }
+  .progress-step.done { background: var(--brand); }
+  .progress-step.active { background: var(--brand-mid); }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 10px;
+  }
+  .section-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 1rem 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer; user-select: none;
+    transition: background 0.15s;
+  }
+  .section-head:hover { background: var(--bg-secondary); }
+  .section-icon {
+    width: 30px; height: 30px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ic-blue { background: var(--brand-light); color: var(--brand); }
+  .ic-teal { background: var(--accent-light); color: var(--accent); }
+  .ic-amber { background: var(--amber-light); color: var(--amber); }
+  .ic-red { background: var(--danger-light); color: var(--danger); }
+  .ic-gray { background: var(--gray-light); color: var(--gray-mid); }
+  .section-title { font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 1; }
+  .section-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; background: var(--gray-light); color: var(--gray-mid);
+    white-space: nowrap;
+  }
+  .section-badge.complete { background: var(--accent-light); color: var(--accent); }
+  .section-chevron { font-size: 11px; color: var(--text-secondary); min-width: 12px; text-align: center; }
+  .section-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 14px; }
+  .section-body.collapsed { display: none; }
+
+  /* FIELDS */
+  .field-row { display: grid; gap: 12px; }
+  .field-row.col2 { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 540px) { .field-row.col2 { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; }
+  .field input, .field textarea, .field select {
+    font-size: 14px; color: var(--text-primary);
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 11px;
+    font-family: inherit; resize: none;
+    transition: border-color 0.15s, background 0.15s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    border-color: var(--brand-mid);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 3px rgba(55,138,221,0.12);
+  }
+  .field textarea { line-height: 1.55; min-height: 72px; }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235F5E5A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; padding-right: 30px; cursor: pointer; }
+
+  /* CHIPS & PILLS */
+  .divider-label { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+  .chips-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font-size: 12px; padding: 4px 11px; border-radius: 12px;
+    border: 0.5px solid var(--border);
+    background: var(--bg-secondary); color: var(--text-secondary);
+    cursor: pointer; user-select: none; transition: all 0.15s;
+    font-family: inherit; line-height: 1.4;
+  }
+  .chip:hover { border-color: var(--brand-mid); color: var(--text-primary); }
+  .chip.on { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .scenario-pill {
+    font-size: 12px; padding: 5px 12px; border-radius: 14px;
+    border: 0.5px solid var(--border);
+    background: var(--bg-secondary); color: var(--text-secondary);
+    cursor: pointer; user-select: none; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .scenario-pill:hover { border-color: var(--brand-mid); color: var(--text-primary); }
+  .scenario-pill.selected { background: var(--brand-light); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+
+  /* TOGGLES */
+  .toggle-row { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+  .toggle-label { font-size: 14px; color: var(--text-primary); flex: 1; }
+  .toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: var(--border); position: relative;
+    cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+    border: none; outline: none;
+  }
+  .toggle::after {
+    content: ''; position: absolute;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: white; top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on { background: var(--brand); }
+  .toggle.on::after { transform: translateX(18px); }
+
+  /* DURATION BUTTONS */
+  .duration-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .duration-btn {
+    font-size: 13px; padding: 6px 14px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--border);
+    background: var(--bg-secondary); color: var(--text-secondary);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .duration-btn:hover { background: var(--bg-primary); color: var(--text-primary); }
+  .duration-btn.sel { background: var(--brand-light); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+
+  /* TTX MATRIX */
+  .ttx-header-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; font-style: italic; }
+  .ttx-matrix { display: flex; flex-direction: column; gap: 7px; }
+  .ttx-row {
+    border: 0.5px solid var(--border); border-radius: var(--radius-md);
+    overflow: hidden; cursor: pointer; transition: border-color 0.15s;
+  }
+  .ttx-row:hover { border-color: var(--brand-mid); }
+  .ttx-row.ttx-selected { border-color: var(--brand); border-width: 1.5px; }
+  .ttx-row-head {
+    display: grid; grid-template-columns: 60px 1fr auto;
+    align-items: center; gap: 12px; padding: 10px 14px;
+    background: var(--bg-secondary);
+  }
+  @media (max-width: 480px) { .ttx-row-head { grid-template-columns: 52px 1fr; } .ttx-effort { display: none; } }
+  .ttx-row.ttx-selected .ttx-row-head { background: var(--brand-light); }
+  .ttx-maturity {
+    font-size: 11px; font-weight: 700; padding: 3px 7px;
+    border-radius: 8px; text-align: center; white-space: nowrap;
+    background: var(--gray-light); color: var(--gray-mid);
+  }
+  .ttx-row.ttx-selected .ttx-maturity { background: var(--brand); color: white; }
+  .ttx-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .ttx-effort { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+  .ttx-detail { display: none; padding: 12px 14px; border-top: 0.5px solid var(--border); background: var(--bg-primary); }
+  .ttx-row.ttx-selected .ttx-detail { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 540px) { .ttx-row.ttx-selected .ttx-detail { grid-template-columns: 1fr; } }
+  .ttx-dl { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+  .ttx-dv { font-size: 13px; color: var(--text-primary); line-height: 1.4; }
+
+  /* ACTION BAR */
+  .action-bar {
+    display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .btn {
+    font-size: 14px; padding: 9px 22px; border-radius: var(--radius-md);
+    cursor: pointer; font-family: inherit; font-weight: 500;
+    transition: all 0.15s; border: none;
+  }
+  .btn-secondary { background: transparent; border: 0.5px solid var(--border); color: var(--text-secondary); }
+  .btn-secondary:hover { background: var(--bg-secondary); }
+  .btn-clipboard { background: var(--bg-secondary); border: 0.5px solid var(--border); color: var(--text-primary); }
+  .btn-clipboard:hover { border-color: var(--brand-mid); color: var(--brand); }
+  .btn-primary { background: var(--brand); color: white; }
+  .btn-primary:hover { background: var(--brand-mid); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: var(--accent); cursor: default; transform: none; }
+
+  /* BANNERS */
+  .banner {
+    display: none; border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem; font-size: 14px; line-height: 1.6;
+    margin-top: 1rem;
+  }
+  .banner.success { background: var(--accent-light); border: 0.5px solid var(--accent); color: var(--accent); }
+  .banner.info { background: var(--brand-light); border: 0.5px solid var(--brand); color: var(--brand); }
+  .banner strong { font-weight: 600; display: block; margin-bottom: 4px; font-size: 15px; }
+  .banner a { color: inherit; text-decoration: underline; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #1a1a18; color: #f0efe8;
+    font-size: 13px; padding: 10px 20px; border-radius: 20px;
+    transition: transform 0.3s; z-index: 9999; white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* CALENDAR WIDGET */
+  .cal-widget { background: var(--bg-secondary); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 12px; user-select: none; }
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-nav-btn { background: none; border: 0.5px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-size: 18px; line-height: 1; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: inherit; }
+  .cal-nav-btn:hover { background: var(--bg-primary); color: var(--text-primary); }
+  .cal-month-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+  .cal-dow { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 0; }
+  .cal-day { font-size: 13px; padding: 6px 2px; border-radius: 6px; cursor: pointer; border: none; background: none; color: var(--text-primary); font-family: inherit; transition: background 0.12s, color 0.12s; }
+  .cal-day:hover:not(:disabled) { background: var(--brand-light); color: var(--brand); }
+  .cal-day.selected { background: var(--brand); color: white; font-weight: 600; }
+  .cal-day.today { outline: 1.5px solid var(--brand-mid); outline-offset: -1.5px; }
+  .cal-day:disabled { color: var(--border); cursor: default; }
+  .cal-selected-display { margin-top: 10px; font-size: 12px; color: var(--brand); font-weight: 600; min-height: 18px; text-align: center; }
+  /* TIME WIDGET */
+  .time-widget { background: var(--bg-secondary); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 12px; }
+  .time-cols { display: flex; gap: 8px; }
+  .time-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .time-col-label { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; text-align: center; }
+  .time-scroll { display: flex; flex-direction: column; gap: 3px; }
+  .time-btn { font-size: 13px; padding: 6px 4px; border-radius: 6px; border: 0.5px solid var(--border); background: var(--bg-primary); color: var(--text-secondary); cursor: pointer; font-family: inherit; transition: all 0.12s; text-align: center; }
+  .time-btn:hover { border-color: var(--brand-mid); color: var(--text-primary); }
+  .time-btn.sel { background: var(--brand); border-color: var(--brand); color: white; font-weight: 600; }
+  .time-display { margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--brand); text-align: center; min-height: 18px; }
+  /* FOOTER */
+  .page-footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 2rem; padding-top: 1rem; }
+
+  /* LOCATION COMBOBOX */
+  .loc-wrap { position: relative; }
+  .loc-trigger {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg-secondary); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 8px 11px;
+    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+    font-size: 14px; color: var(--text-primary); font-family: inherit;
+    width: 100%; text-align: left;
+  }
+  .loc-trigger:hover { border-color: var(--brand-mid); background: var(--bg-primary); }
+  .loc-trigger-text { flex: 1; color: var(--text-secondary); }
+  .loc-trigger-text.chosen { color: var(--text-primary); font-weight: 500; }
+  .loc-trigger-caret { font-size: 10px; color: var(--text-secondary); transition: transform 0.22s; flex-shrink: 0; }
+  .loc-wrap.open .loc-trigger { border-color: var(--brand-mid); background: var(--bg-primary); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .loc-wrap.open .loc-trigger-caret { transform: rotate(180deg); color: var(--brand); }
+  .loc-panel {
+    display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 9999;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--brand-mid); border-top: none;
+    border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    max-height: 300px; overflow: hidden;
+    flex-direction: column;
+  }
+  .loc-wrap.open .loc-panel { display: flex; }
+  .loc-filter-wrap { padding: 8px; border-bottom: 0.5px solid var(--border); flex-shrink: 0; background: var(--bg-primary); }
+  .loc-filter-wrap input {
+    width: 100%; font-size: 13px; border: 0.5px solid var(--border);
+    border-radius: 6px; padding: 6px 10px; background: var(--bg-secondary);
+    color: var(--text-primary); font-family: inherit; outline: none;
+  }
+  .loc-filter-wrap input:focus { border-color: var(--brand-mid); background: var(--bg-primary); }
+  .loc-list { overflow-y: auto; flex: 1; }
+  .loc-state-row { border-bottom: 0.5px solid var(--border); }
+  .loc-state-row:last-child { border-bottom: none; }
+  .loc-state-btn {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; padding: 9px 12px; border: none; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--text-primary); background: var(--bg-secondary);
+    transition: background 0.15s, color 0.15s; text-align: left;
+  }
+  .loc-state-btn:hover, .loc-state-btn.open { background: var(--brand-light); color: var(--brand); }
+  .loc-state-left { display: flex; align-items: center; gap: 7px; flex: 1; }
+  .loc-state-flag { font-size: 14px; }
+  .loc-state-count { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+  .loc-state-btn.open .loc-state-count { color: var(--brand); }
+  .loc-state-chev { font-size: 10px; color: var(--text-secondary); transition: transform 0.22s; flex-shrink: 0; }
+  .loc-state-btn.open .loc-state-chev { transform: rotate(180deg); color: var(--brand); }
+  .loc-cities-wrap { max-height: 0; overflow: hidden; transition: max-height 0.28s ease; background: var(--bg-primary); }
+  .loc-cities-inner { display: grid; grid-template-columns: 1fr 1fr; padding: 4px 8px 8px; }
+  @media (max-width: 480px) { .loc-cities-inner { grid-template-columns: 1fr; } }
+  .loc-city-btn {
+    font-size: 13px; padding: 5px 10px; border: none; background: none;
+    color: var(--text-primary); cursor: pointer; font-family: inherit;
+    text-align: left; border-radius: 5px; transition: background 0.1s, color 0.1s;
+    width: 100%;
+  }
+  .loc-city-btn:hover { background: var(--brand-light); color: var(--brand); }
+  .loc-city-btn.selected { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .loc-no-results { font-size: 13px; color: var(--text-secondary); padding: 14px; text-align: center; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="qs-header">
+    <div class="logo-row">
+      <svg class="shield-wrap" viewBox="0 0 36 36" fill="none">
+        <path d="M18 3L5 8.5v10c0 8.1 5.7 15.7 13 17.5C25.3 34.2 31 26.6 31 16.5V8.5L18 3z" fill="#185FA5" opacity="0.13"/>
+        <path d="M18 3L5 8.5v10c0 8.1 5.7 15.7 13 17.5C25.3 34.2 31 26.6 31 16.5V8.5L18 3z" stroke="#185FA5" stroke-width="1.5" fill="none"/>
+        <path d="M12.5 18.5l3.5 3.5 8-8" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="firm-name">VanRein Compliance</span>
+    </div>
+    <div class="qs-title">Tabletop Exercise Scoping Questionnaire</div>
+    <div class="qs-subtitle">Complete all sections before your scoping call. Fields marked <span class="star">*</span> are required. On submit, your responses will open in your email client addressed to the VanRein team.</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Section 1 of 9</span>
+      <span class="progress-pct" id="prog-pct">0% complete</span>
+    </div>
+    <div class="progress-track" id="progress-track"></div>
+  </div>
+
+  <!-- S1 -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(1)">
+      <div class="section-icon ic-blue"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 5h6M4 7.5h6M4 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <span class="section-title">General Information</span>
+      <span class="section-badge" id="badge-1">Required</span>
+      <span class="section-chevron" id="chev-1">▼</span>
+    </div>
+    <div class="section-body" id="body-1">
+      <div class="field-row col2">
+        <div class="field"><label>Organization Name <span class="star">*</span></label><input id="org-name" type="text" placeholder="Acme Health Services" oninput="autoSave()"></div>
+        <div class="field"><label>Primary Contact Name <span class="star">*</span></label><input id="contact-name" type="text" placeholder="Jane Smith" oninput="autoSave()"></div>
+      </div>
+      <div class="field-row col2">
+        <div class="field"><label>Primary Contact Email <span class="star">*</span></label><input id="contact-email" type="email" placeholder="jsmith@org.com" oninput="autoSave()"></div>
+        <div class="field"><label>Primary Contact Phone</label><input id="contact-phone" type="tel" placeholder="+1 (555) 000-0000" oninput="autoSave()"></div>
+      </div>
+      <div class="field-row col2">
+        <div class="field"><label>Organization Type</label><select id="org-type" onchange="autoSave()"><option value="">Select...</option><option>Healthcare Provider</option><option>Telephone Answering Service</option><option>Health Plan / Payer</option><option>Business Associate</option><option>Financial Services</option><option>Government / Public Sector</option><option>Other</option></select></div>
+        <div class="field"><label>Approximate Employee Count</label><select id="emp-count" onchange="autoSave()"><option value="">Select...</option><option>1–25</option><option>26–100</option><option>101–500</option><option>501–2,000</option><option>2,000+</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(2)">
+      <div class="section-icon ic-teal"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="0.9" fill="currentColor"/></svg></div>
+      <span class="section-title">Exercise Objectives</span>
+      <span class="section-badge" id="badge-2">Required</span>
+      <span class="section-chevron" id="chev-2">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-2">
+      <div class="field"><label>Primary Objectives <span class="star">*</span></label><textarea id="objectives" rows="3" placeholder="Describe what you hope to achieve — e.g., test IR procedures, identify capability gaps, fulfill compliance obligations, train new staff..." oninput="autoSave()"></textarea></div>
+      <div class="divider-label">Compliance Drivers (select all that apply)</div>
+      <div class="chips-wrap" id="compliance-chips">
+        <button class="chip" onclick="toggleChip(this)">HIPAA Security Rule</button>
+        <button class="chip" onclick="toggleChip(this)">HIPAA Breach Notification</button>
+        <button class="chip" onclick="toggleChip(this)">NIST CSF 2.0</button>
+        <button class="chip" onclick="toggleChip(this)">HITRUST CSF</button>
+        <button class="chip" onclick="toggleChip(this)">SOC 2 Type II</button>
+        <button class="chip" onclick="toggleChip(this)">PCI-DSS</button>
+        <button class="chip" onclick="toggleChip(this)">State Privacy Law</button>
+        <button class="chip" onclick="toggleChip(this)">Cyber Insurance Requirement</button>
+        <button class="chip" onclick="toggleChip(this)">Board / Executive Mandate</button>
+        <button class="chip" onclick="toggleChip(this)">Annual Training Requirement</button>
+      </div>
+      <div class="field"><label>Prior TTX Experience</label><select id="prior-ttx" onchange="autoSave()"><option value="">Select...</option><option>First tabletop exercise</option><option>1–2 prior exercises</option><option>3–5 prior exercises</option><option>6+ prior exercises (mature program)</option></select></div>
+    </div>
+  </div>
+
+  <!-- S3 TTX Type -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(3)">
+      <div class="section-icon ic-blue"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="7.5" y="2" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8.5" width="5.5" height="3.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="7.5" y="8.5" width="5.5" height="3.5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg></div>
+      <span class="section-title">TTX Type &amp; Maturity Level</span>
+      <span class="section-badge" id="badge-3">Required</span>
+      <span class="section-chevron" id="chev-3">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-3">
+      <div class="ttx-header-label">Click one or more rows to select your exercise types and expand their details</div>
+      <div class="ttx-matrix" id="ttx-matrix"></div>
+      <div class="field"><label>Additional Context on Exercise Type</label><textarea id="ttx-context" rows="2" placeholder="Any nuances about your maturity level, or reasons for choosing this exercise type..." oninput="autoSave()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- S4 Participants -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(4)">
+      <div class="section-icon ic-blue"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9.5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 12c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M9.5 8.5c1.5 0 3 1 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <span class="section-title">Participants</span>
+      <span class="section-badge" id="badge-4">Required</span>
+      <span class="section-chevron" id="chev-4">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-4">
+      <div class="divider-label">Functional Areas Participating</div>
+      <div class="chips-wrap" id="role-chips">
+        <button class="chip" onclick="toggleChip(this)">Executive Leadership (C-Suite)</button>
+        <button class="chip" onclick="toggleChip(this)">IT / Infrastructure</button>
+        <button class="chip" onclick="toggleChip(this)">Information Security</button>
+        <button class="chip" onclick="toggleChip(this)">Legal / Compliance</button>
+        <button class="chip" onclick="toggleChip(this)">Human Resources</button>
+        <button class="chip" onclick="toggleChip(this)">Operations / Call Center</button>
+        <button class="chip" onclick="toggleChip(this)">Finance / Accounting</button>
+        <button class="chip" onclick="toggleChip(this)">Communications / PR</button>
+        <button class="chip" onclick="toggleChip(this)">Clinical / Medical Staff</button>
+        <button class="chip" onclick="toggleChip(this)">Vendor / Third-Party</button>
+      </div>
+      <div class="field-row col2">
+        <div class="field"><label>Expected Participant Count</label><select id="part-count" onchange="autoSave()"><option value="">Select...</option><option>2–5 participants</option><option>6–10 participants</option><option>11–20 participants</option><option>20+ participants</option></select></div>
+        <div class="field"><label>Executive Sponsor / Champion</label><input id="exec-sponsor" type="text" placeholder="Name and title" oninput="autoSave()"></div>
+      </div>
+      <div class="field"><label>Named Participants / Key Roles (optional)</label><textarea id="named-participants" rows="2" placeholder="List key individuals by name and role if known..." oninput="autoSave()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- S5 Scenario -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(5)">
+      <div class="section-icon ic-red"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M7 2L2 12h10L7 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 6v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="10" r="0.7" fill="currentColor"/></svg></div>
+      <span class="section-title">Scenario Scope</span>
+      <span class="section-badge" id="badge-5">Required</span>
+      <span class="section-chevron" id="chev-5">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-5">
+      <div class="divider-label">Incident Type (select all that apply)</div>
+      <div class="chips-wrap" id="scenario-pills">
+        <button class="scenario-pill" onclick="toggleScenario(this)">Acceptable Use Violation</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">AI / LLM Incident</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Business Email Compromise</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Close Access Breach</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Cyber-Intrusion</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Data Loss / Data Breach</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Denial of Service (DoS/DDoS)</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">eDiscovery</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Insider Threat</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Malware Event</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Physical Security Event</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Ransomware / Extortion</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Reconnaissance / Probing</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Social Engineering / Phishing</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Supply Chain / Third-Party</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Website Compromise</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Zero-day Vulnerability</button>
+        <button class="scenario-pill" onclick="toggleScenario(this)">Custom / TBD</button>
+      </div>
+      <div class="field"><label>Scenario Details / Special Context</label><textarea id="scenario-detail" rows="2" placeholder="Describe any specific narrative elements, threat actor type, or regulatory context..." oninput="autoSave()"></textarea></div>
+      <div class="field"><label>Systems / Data <span style="color:var(--accent)">IN SCOPE</span></label><textarea id="in-scope" rows="2" placeholder="e.g., EHR system, call recording platform, billing system, PHI databases, Active Directory..." oninput="autoSave()"></textarea></div>
+      <div class="field"><label>Systems / Data <span style="color:var(--danger)">OUT OF SCOPE</span></label><textarea id="out-scope" rows="2" placeholder="e.g., production call center (live), payroll system, systems under maintenance..." oninput="autoSave()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- S6 IR Readiness -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(6)">
+      <div class="section-icon ic-teal"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 5h6M4 7h6M4 9h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <span class="section-title">Security Policies &amp; IR Readiness</span>
+      <span class="section-badge" id="badge-6">—</span>
+      <span class="section-chevron" id="chev-6">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-6">
+      <div class="toggle-row"><span class="toggle-label">Documented Incident Response Plan exists</span><button class="toggle" id="tog-irp" onclick="this.classList.toggle('on');autoSave()"></button></div>
+      <div class="toggle-row"><span class="toggle-label">Business Continuity / Disaster Recovery Plan exists</span><button class="toggle" id="tog-bc" onclick="this.classList.toggle('on');autoSave()"></button></div>
+      <div class="toggle-row"><span class="toggle-label">HIPAA Breach Notification procedures in place</span><button class="toggle" id="tog-hipaa" onclick="this.classList.toggle('on');autoSave()"></button></div>
+      <div class="toggle-row"><span class="toggle-label">Cyber insurance policy active</span><button class="toggle" id="tog-ins" onclick="this.classList.toggle('on');autoSave()"></button></div>
+      <div class="field"><label>Key Assets &amp; Critical Functions</label><textarea id="key-assets" rows="2" placeholder="Describe your most critical systems, data, and business functions..." oninput="autoSave()"></textarea></div>
+      <div class="field"><label>Known Gaps / Areas of Concern</label><textarea id="known-gaps" rows="2" placeholder="Areas you already know need improvement, or that prompted this exercise..." oninput="autoSave()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- S7 Communications -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(7)">
+      <div class="section-icon ic-amber"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1" y="2.5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 5l6 4 6-4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+      <span class="section-title">Communications Framework</span>
+      <span class="section-badge" id="badge-7">—</span>
+      <span class="section-chevron" id="chev-7">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-7">
+      <div class="field"><label>Internal Communications During an Incident</label><textarea id="int-comms" rows="2" placeholder="How does your team coordinate internally? (e.g., Teams/Slack, phone tree, incident bridge, war room...)" oninput="autoSave()"></textarea></div>
+      <div class="field"><label>External Communications During an Incident</label><textarea id="ext-comms" rows="2" placeholder="Who is authorized to speak externally? How do you handle media, regulators, law enforcement?" oninput="autoSave()"></textarea></div>
+      <div class="field-row col2">
+        <div class="field"><label>Legal Counsel / Outside Counsel</label><input id="legal-counsel" type="text" placeholder="Firm name or TBD" oninput="autoSave()"></div>
+        <div class="field"><label>Cyber Insurance Carrier</label><input id="ins-carrier" type="text" placeholder="Carrier name or None" oninput="autoSave()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8 Logistics -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(8)">
+      <div class="section-icon ic-gray"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 3V2M9 3V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M1 6h12" stroke="currentColor" stroke-width="1.3"/></svg></div>
+      <span class="section-title">Logistics</span>
+      <span class="section-badge" id="badge-8">Required</span>
+      <span class="section-chevron" id="chev-8">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-8">
+
+      <!-- Calendar Widget -->
+      <div class="field">
+        <label>Preferred Date(s) <span class="star">*</span></label>
+        <div class="cal-widget" id="cal-widget">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="calPrev()" type="button">&#8249;</button>
+            <span class="cal-month-label" id="cal-month-label"></span>
+            <button class="cal-nav-btn" onclick="calNext()" type="button">&#8250;</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-selected-display" id="cal-selected-display">No dates selected</div>
+        </div>
+        <input type="hidden" id="pref-dates">
+      </div>
+
+      <!-- Time Picker Widget -->
+      <div class="field">
+        <label>Preferred Start Time</label>
+        <div class="time-widget" id="time-widget">
+          <div class="time-cols">
+            <div class="time-col">
+              <div class="time-col-label">Hour</div>
+              <div class="time-scroll" id="time-hour">
+                <button class="time-btn" onclick="selectHour(this,'8')" type="button">8</button>
+                <button class="time-btn" onclick="selectHour(this,'9')" type="button">9</button>
+                <button class="time-btn" onclick="selectHour(this,'10')" type="button">10</button>
+                <button class="time-btn" onclick="selectHour(this,'11')" type="button">11</button>
+                <button class="time-btn" onclick="selectHour(this,'12')" type="button">12</button>
+                <button class="time-btn" onclick="selectHour(this,'1')" type="button">1</button>
+                <button class="time-btn" onclick="selectHour(this,'2')" type="button">2</button>
+                <button class="time-btn" onclick="selectHour(this,'3')" type="button">3</button>
+                <button class="time-btn" onclick="selectHour(this,'4')" type="button">4</button>
+                <button class="time-btn" onclick="selectHour(this,'5')" type="button">5</button>
+              </div>
+            </div>
+            <div class="time-col">
+              <div class="time-col-label">Minute</div>
+              <div class="time-scroll" id="time-min">
+                <button class="time-btn" onclick="selectMin(this,'00')" type="button">:00</button>
+                <button class="time-btn" onclick="selectMin(this,'15')" type="button">:15</button>
+                <button class="time-btn" onclick="selectMin(this,'30')" type="button">:30</button>
+                <button class="time-btn" onclick="selectMin(this,'45')" type="button">:45</button>
+              </div>
+            </div>
+            <div class="time-col">
+              <div class="time-col-label">AM / PM</div>
+              <div class="time-scroll" id="time-ampm">
+                <button class="time-btn" onclick="selectAmPm(this,'AM')" type="button">AM</button>
+                <button class="time-btn" onclick="selectAmPm(this,'PM')" type="button">PM</button>
+              </div>
+            </div>
+            <div class="time-col">
+              <div class="time-col-label">Timezone</div>
+              <div class="time-scroll" id="time-tz">
+                <button class="time-btn" onclick="selectTz(this,'ET')" type="button">ET</button>
+                <button class="time-btn" onclick="selectTz(this,'CT')" type="button">CT</button>
+                <button class="time-btn" onclick="selectTz(this,'MT')" type="button">MT</button>
+                <button class="time-btn" onclick="selectTz(this,'PT')" type="button">PT</button>
+              </div>
+            </div>
+          </div>
+          <div class="time-display" id="time-display">No time selected</div>
+        </div>
+        <input type="hidden" id="pref-time">
+      </div>
+
+      <div class="field-row" style="display:none"><!-- spacer --></div>
+      <div class="divider-label">Exercise Duration</div>
+      <div class="duration-row">
+        <button class="duration-btn" onclick="selectDuration(this)">2 hours</button>
+        <button class="duration-btn" onclick="selectDuration(this)">Half-day (4 hrs)</button>
+        <button class="duration-btn" onclick="selectDuration(this)">Full-day (8 hrs)</button>
+        <button class="duration-btn" onclick="selectDuration(this)">Multi-day</button>
+        <button class="duration-btn" onclick="selectDuration(this)">TBD</button>
+      </div>
+      <div class="field"><label>Delivery Format</label><select id="delivery-fmt" onchange="autoSave()"><option value="">Select...</option><option>In-person (client site)</option><option>Virtual (Zoom / Teams)</option><option>Hybrid</option><option>No preference</option></select></div>
+      <div class="field">
+        <label>Exercise Location (if in-person)</label>
+        <div class="loc-wrap" id="loc-wrap">
+          <button class="loc-trigger" id="loc-trigger" type="button" onclick="locToggle()">
+            <span>📍</span>
+            <span class="loc-trigger-text" id="loc-trigger-text">Select city &amp; state...</span>
+            <span class="loc-trigger-caret">▼</span>
+          </button>
+          <div class="loc-panel" id="loc-panel">
+            <div class="loc-filter-wrap">
+              <input id="loc-filter-input" type="text" placeholder="Type to filter states &amp; cities..." oninput="locFilter(this.value)" autocomplete="off">
+            </div>
+            <div class="loc-list" id="loc-list"></div>
+          </div>
+        </div>
+        <input type="hidden" id="location">
+      </div>
+    </div>
+  </div>
+
+  <!-- S9 Success -->
+  <div class="section-card">
+    <div class="section-head" onclick="toggleSection(9)">
+      <div class="section-icon ic-teal"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M2 9l3-3 3 3 4-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 11l1 1 1.5-2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="section-title">Success Criteria &amp; Follow-up</span>
+      <span class="section-badge" id="badge-9">—</span>
+      <span class="section-chevron" id="chev-9">▶</span>
+    </div>
+    <div class="section-body collapsed" id="body-9">
+      <div class="field"><label>How Will You Measure Success?</label><textarea id="success-criteria" rows="3" placeholder="e.g., team correctly identifies escalation triggers within 15 minutes, gap report reviewed by board..." oninput="autoSave()"></textarea></div>
+      <div class="divider-label">Desired Deliverables Post-Exercise</div>
+      <div class="chips-wrap" id="deliverable-chips">
+        <button class="chip" onclick="toggleChip(this)">After-Action Report (AAR)</button>
+        <button class="chip" onclick="toggleChip(this)">Gap / Finding Summary</button>
+        <button class="chip" onclick="toggleChip(this)">Remediation Roadmap</button>
+        <button class="chip" onclick="toggleChip(this)">Board Executive Summary</button>
+        <button class="chip" onclick="toggleChip(this)">Updated IR Plan Recommendations</button>
+        <button class="chip" onclick="toggleChip(this)">HIPAA Compliance Evidence</button>
+        <button class="chip" onclick="toggleChip(this)">Follow-on Training Plan</button>
+        <button class="chip" onclick="toggleChip(this)">Metrics / KPIs</button>
+      </div>
+      <div class="field"><label>Additional Comments or Special Requests</label><textarea id="comments" rows="3" placeholder="Anything else VanRein Compliance should know — sensitivities, recent incidents, constraints, preferences..." oninput="autoSave()"></textarea></div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+    <button class="btn btn-clipboard" onclick="copyToClipboard()" id="copy-btn">&#128203; Copy Responses</button>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitForm()">Submit to VanRein ↗</button>
+  </div>
+
+  <div class="banner success" id="success-banner">
+    <strong>Responses ready to send</strong>
+    Your email client should have opened addressed to <strong>Bennie@vanreincompliance.com</strong> and <strong>Dawn@vanreincompliance.com</strong>. If it didn't open, use the <em>Copy Responses</em> button above to paste your answers into Gmail, Outlook, or any webmail, then send to those addresses.
+  </div>
+
+  <div class="banner info" id="copy-banner">
+    <strong>Responses copied to clipboard</strong>
+    Paste into a new email addressed to <a href="mailto:Bennie@vanreincompliance.com">Bennie@vanreincompliance.com</a> and <a href="mailto:Dawn@vanreincompliance.com">Dawn@vanreincompliance.com</a> and hit send.
+  </div>
+
+  <div class="page-footer">
+    VanRein Compliance &nbsp;·&nbsp; Cybersecurity &amp; AI Governance &nbsp;·&nbsp; vanreincompliance.com
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TTX_TYPES = [
+  { maturity:'0 → 1', name:'Awareness / Orientation', objective:'Establish baseline readiness', validates:'Roles, reporting paths, workforce awareness', effort:'Low', duration:'1–2 weeks' },
+  { maturity:'1 → 2', name:'Policy & Plan Validation (Walkthrough)', objective:'Prove plans are usable', validates:'IR / DR / BCP plans align to reality', effort:'Low–Medium', duration:'2–3 weeks' },
+  { maturity:'2 → 3', name:'Operational / Tactical', objective:'Test execution under pressure', validates:'Detect → contain → recover actions', effort:'Medium–High', duration:'3–4 weeks' },
+  { maturity:'2 → 3', name:'Executive / Crisis Management', objective:'Test leadership decision-making', validates:'Legal, comms, regulatory, risk decisions', effort:'Medium', duration:'2–3 weeks' },
+  { maturity:'2 → 4', name:'DR / BCP (Resilience & Recovery)', objective:'Validate recovery capability', validates:'RTO/RPO, failover, manual operations', effort:'Medium–High', duration:'3–5 weeks' },
+  { maturity:'3 → 4', name:'Regulatory / Compliance-Driven', objective:'Demonstrate audit defensibility', validates:'Evidence, documentation, remediation', effort:'Medium–High', duration:'3–5 weeks' },
+  { maturity:'3 → 4', name:'Cross-Functional / Enterprise', objective:'Break down silos', validates:'Coordination across IT, HR, Legal, Ops', effort:'High', duration:'4–6 weeks' },
+  { maturity:'4 → 5', name:'Threat-Intel / Red-Team–Informed (Hybrid)', objective:'Optimize realism & learning', validates:'Alignment to real-world attack paths', effort:'High', duration:'4–6 weeks' }
+];
+
+let selectedTTX = [];
+
+function buildTTXMatrix() {
+  const c = document.getElementById('ttx-matrix');
+  TTX_TYPES.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'ttx-row'; row.id = 'ttx-row-'+i;
+    row.innerHTML = `<div class="ttx-row-head" onclick="selectTTX(${i})"><div class="ttx-maturity">${t.maturity}</div><div class="ttx-name">${t.name}</div><div class="ttx-effort">${t.effort} · ${t.duration}</div></div><div class="ttx-detail"><div><div class="ttx-dl">Primary Objective</div><div class="ttx-dv">${t.objective}</div></div><div><div class="ttx-dl">What It Validates</div><div class="ttx-dv">${t.validates}</div></div><div><div class="ttx-dl">Effort / Timeline</div><div class="ttx-dv">${t.effort} · ${t.duration} start-to-finish</div></div></div>`;
+    c.appendChild(row);
+  });
+}
+
+function selectTTX(i) {
+  const row = document.getElementById('ttx-row-'+i);
+  const idx = selectedTTX.indexOf(i);
+  if (idx === -1) {
+    selectedTTX.push(i);
+    row.classList.add('ttx-selected');
+  } else {
+    selectedTTX.splice(idx, 1);
+    row.classList.remove('ttx-selected');
+  }
+  autoSave();
+}
+
+const SECTIONS = 9;
+
+function toggleSection(n) {
+  const b = document.getElementById('body-'+n), c = document.getElementById('chev-'+n);
+  const open = !b.classList.contains('collapsed');
+  b.classList.toggle('collapsed', open);
+  c.textContent = open ? '▶' : '▼';
+
+}
+
+function toggleChip(el) { el.classList.toggle('on'); autoSave(); }
+
+function toggleScenario(el) { el.classList.toggle('selected'); autoSave(); }
+function selectScenario(el) { toggleScenario(el); }
+
+function selectDuration(el) {
+  document.querySelectorAll('.duration-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); autoSave();
+}
+
+function req(id) { return (document.getElementById(id)?.value||'').trim().length > 0; }
+
+function getSectionCompletion() {
+  return [
+    req('org-name') && req('contact-name') && req('contact-email'),
+    req('objectives'),
+    selectedTTX.length > 0,
+    document.querySelectorAll('#role-chips .chip.on').length > 0 || req('exec-sponsor'),
+    document.querySelectorAll('.scenario-pill.selected').length > 0,
+    req('key-assets') || document.querySelector('.toggle.on') !== null,
+    req('int-comms') || req('ext-comms'),
+    req('pref-dates') && (document.querySelectorAll('.duration-btn.sel').length > 0 || req('delivery-fmt')),
+    req('success-criteria')
+  ];
+}
+
+function updateProgress() {
+  const scores = getSectionCompletion();
+  const done = scores.filter(Boolean).length;
+  const track = document.getElementById('progress-track');
+  track.innerHTML = '';
+  for (let i=0; i<SECTIONS; i++) {
+    const s = document.createElement('div');
+    s.className = 'progress-step '+(i<done?'done':(i===done?'active':''));
+    s.title = 'Go to section '+(i+1);
+    s.onclick = ()=>{ const b=document.getElementById('body-'+(i+1)),c=document.getElementById('chev-'+(i+1)); if(b.classList.contains('collapsed')){b.classList.remove('collapsed');c.textContent='▼';} b.scrollIntoView({behavior:'smooth',block:'nearest'}); };
+    track.appendChild(s);
+  }
+  document.getElementById('prog-pct').textContent = Math.round((done/SECTIONS)*100)+'% complete';
+  document.getElementById('prog-label').textContent = 'Section '+Math.min(done+1,SECTIONS)+' of '+SECTIONS;
+  const defs = ['Required','Required','Required','Required','Required','—','—','Required','—'];
+  for (let i=0; i<SECTIONS; i++) {
+    const b = document.getElementById('badge-'+(i+1));
+    if(b){ b.textContent=scores[i]?'Complete':defs[i]; b.className='section-badge'+(scores[i]?' complete':''); }
+  }
+}
+
+function autoSave() { updateProgress(); }
+
+function collectFormData() {
+  const chips = id => Array.from(document.querySelectorAll('#'+id+' .chip.on')).map(e=>e.textContent).join(', ') || 'None selected';
+  const scenario = Array.from(document.querySelectorAll('.scenario-pill.selected')).map(e=>e.textContent).join(', ') || 'Not selected';
+  const duration = document.querySelector('.duration-btn.sel')?.textContent || 'Not specified';
+  const ttxName = selectedTTX.length > 0 ? selectedTTX.map(i => TTX_TYPES[i].name+' (Maturity '+TTX_TYPES[i].maturity+')').join('; ') : 'Not selected';
+  const tog = id => document.getElementById(id)?.classList.contains('on') ? 'Yes' : 'No';
+  const v = id => (document.getElementById(id)?.value||'').trim() || '—';
+
+  return `VANREIN COMPLIANCE
+TABLETOP EXERCISE SCOPING QUESTIONNAIRE
+Submitted: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
+${'═'.repeat(50)}
+
+GENERAL INFORMATION
+${'─'.repeat(40)}
+Organization:       ${v('org-name')}
+Contact Name:       ${v('contact-name')}
+Email:              ${v('contact-email')}
+Phone:              ${v('contact-phone')}
+Org Type:           ${v('org-type')}
+Employee Count:     ${v('emp-count')}
+
+EXERCISE OBJECTIVES
+${'─'.repeat(40)}
+Primary Objectives:
+${v('objectives')}
+
+Compliance Drivers: ${chips('compliance-chips')}
+Prior TTX Experience: ${v('prior-ttx')}
+
+TTX TYPE & MATURITY LEVEL
+${'─'.repeat(40)}
+Selected TTX Type:  ${ttxName}
+Additional Context: ${v('ttx-context')}
+
+PARTICIPANTS
+${'─'.repeat(40)}
+Functional Areas:   ${chips('role-chips')}
+Participant Count:  ${v('part-count')}
+Executive Sponsor:  ${v('exec-sponsor')}
+Named Participants: ${v('named-participants')}
+
+SCENARIO SCOPE
+${'─'.repeat(40)}
+Incident Type:      ${scenario}
+Scenario Details:   ${v('scenario-detail')}
+In Scope:           ${v('in-scope')}
+Out of Scope:       ${v('out-scope')}
+
+SECURITY POLICIES & IR READINESS
+${'─'.repeat(40)}
+IR Plan Exists:             ${tog('tog-irp')}
+BCP/DR Plan Exists:         ${tog('tog-bc')}
+HIPAA Breach Notification:  ${tog('tog-hipaa')}
+Cyber Insurance Active:     ${tog('tog-ins')}
+Key Assets & Functions:     ${v('key-assets')}
+Known Gaps:                 ${v('known-gaps')}
+
+COMMUNICATIONS FRAMEWORK
+${'─'.repeat(40)}
+Internal Comms:     ${v('int-comms')}
+External Comms:     ${v('ext-comms')}
+Legal Counsel:      ${v('legal-counsel')}
+Insurance Carrier:  ${v('ins-carrier')}
+
+LOGISTICS
+${'─'.repeat(40)}
+Preferred Date(s):  ${v('pref-dates')}
+Preferred Time:     ${v('pref-time')}
+Duration:           ${duration}
+Delivery Format:    ${v('delivery-fmt')}
+Location:           ${v('location')}
+
+SUCCESS CRITERIA & FOLLOW-UP
+${'─'.repeat(40)}
+Success Measures:
+${v('success-criteria')}
+
+Desired Deliverables: ${chips('deliverable-chips')}
+
+Additional Comments:
+${v('comments')}
+
+${'═'.repeat(50)}
+Submitted via VanRein Compliance TTX Scoping Questionnaire
+vanreincompliance.com`;
+}
+
+function buildMailtoLink(body) {
+  const org = (document.getElementById('org-name')?.value||'').trim() || 'Prospect';
+  const to = 'Bennie@vanreincompliance.com,Dawn@vanreincompliance.com';
+  const subject = encodeURIComponent('TTX Scoping Questionnaire — '+org);
+  return `mailto:${to}?subject=${subject}&body=${encodeURIComponent(body)}`;
+}
+
+function showToast(msg, duration=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), duration);
+}
+
+function validate() {
+  const scores = getSectionCompletion();
+  const required = [0,1,2,4,7];
+  const names = ['General Information','Exercise Objectives','TTX Type & Maturity Level','Scenario Scope','Logistics'];
+  const missing = required.filter(i=>!scores[i]);
+  if (missing.length > 0) {
+    alert('Please complete these required sections:\n\n'+missing.map(i=>'• '+names[required.indexOf(i)]).join('\n'));
+    const sec = missing[0]+1;
+    const b=document.getElementById('body-'+sec), c=document.getElementById('chev-'+sec);
+    b.classList.remove('collapsed'); c.textContent='▼';
+    b.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return false;
+  }
+  return true;
+}
+
+function copyToClipboard() {
+  if (!validate()) return;
+  const body = collectFormData();
+  navigator.clipboard.writeText(body).then(()=>{
+    document.getElementById('copy-banner').style.display='block';
+    document.getElementById('copy-banner').scrollIntoView({behavior:'smooth',block:'nearest'});
+    showToast('✓ Responses copied to clipboard');
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(()=>{ btn.textContent='📋 Copy Responses'; }, 3000);
+  }).catch(()=>{
+    showToast('Copy failed — try the Submit button instead');
+  });
+}
+
+function submitForm() {
+  if (!validate()) return;
+  const body = collectFormData();
+  const mailto = buildMailtoLink(body);
+  window.location.href = mailto;
+  setTimeout(()=>{
+    document.getElementById('success-banner').style.display='block';
+    document.getElementById('success-banner').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 500);
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = '✓ Submitted'; btn.disabled = true;
+}
+
+function clearForm() {
+  if (!confirm('Clear all form data?')) return;
+  document.querySelectorAll('input,textarea,select').forEach(el=>{el.value='';});
+  document.querySelectorAll('.chip.on,.scenario-pill.selected,.duration-btn.sel').forEach(el=>el.classList.remove('on','selected','sel'));
+  document.querySelectorAll('.toggle.on').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.ttx-row.ttx-selected').forEach(el=>el.classList.remove('ttx-selected'));
+  selectedTTX = [];
+  document.getElementById('success-banner').style.display='none';
+  document.getElementById('copy-banner').style.display='none';
+  const sb=document.getElementById('submit-btn');
+  sb.textContent='Submit to VanRein ↗'; sb.disabled=false;
+  document.getElementById('copy-btn').textContent='📋 Copy Responses';
+  selectedDates=[]; timeHour=''; timeMin=''; timeAmPm=''; timeTz=''; locClear();
+  initCal(); updateTimeDisplay();
+  updateProgress();
+}
+
+// ── CALENDAR ──────────────────────────────────────────
+let calYear, calMonth, selectedDates = [];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function initCal() {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  renderCal();
+}
+
+function renderCal() {
+  document.getElementById('cal-month-label').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  DAYS.forEach(d => { const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const total = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date();
+  for (let i=0; i<first; i++) { const el=document.createElement('button'); el.className='cal-day'; el.disabled=true; el.style.visibility='hidden'; grid.appendChild(el); }
+  for (let d=1; d<=total; d++) {
+    const el = document.createElement('button');
+    el.className = 'cal-day'; el.textContent = d; el.type = 'button';
+    const dateStr = calYear+'-'+(calMonth+1)+'-'+d;
+    const isPast = new Date(calYear,calMonth,d) < new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    if (isPast) { el.disabled=true; el.style.opacity='0.3'; }
+    if (today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d) el.classList.add('today');
+    if (selectedDates.includes(dateStr)) el.classList.add('selected');
+    if (!isPast) el.onclick = () => toggleCalDay(dateStr, el);
+    grid.appendChild(el);
+  }
+  updateCalDisplay();
+}
+
+function toggleCalDay(dateStr, el) {
+  const idx = selectedDates.indexOf(dateStr);
+  if (idx === -1) { selectedDates.push(dateStr); el.classList.add('selected'); }
+  else { selectedDates.splice(idx,1); el.classList.remove('selected'); }
+  updateCalDisplay();
+}
+
+function updateCalDisplay() {
+  const disp = document.getElementById('cal-selected-display');
+  const input = document.getElementById('pref-dates');
+  if (selectedDates.length === 0) { disp.textContent = 'No dates selected'; input.value = ''; }
+  else {
+    const sorted = [...selectedDates].sort();
+    const fmt = sorted.map(s => { const [y,m,d]=s.split('-'); return MONTHS[+m-1]+' '+d+', '+y; });
+    disp.textContent = fmt.join('  ·  ');
+    input.value = fmt.join(', ');
+  }
+  autoSave();
+}
+
+function calPrev() {
+  calMonth--; if (calMonth<0){calMonth=11;calYear--;} renderCal();
+}
+function calNext() {
+  calMonth++; if (calMonth>11){calMonth=0;calYear++;} renderCal();
+}
+
+// ── TIME PICKER ───────────────────────────────────────
+let timeHour='', timeMin='', timeAmPm='', timeTz='';
+
+function selectHour(el, val) {
+  document.querySelectorAll('#time-hour .time-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); timeHour=val; updateTimeDisplay();
+}
+function selectMin(el, val) {
+  document.querySelectorAll('#time-min .time-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); timeMin=val; updateTimeDisplay();
+}
+function selectAmPm(el, val) {
+  document.querySelectorAll('#time-ampm .time-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); timeAmPm=val; updateTimeDisplay();
+}
+function selectTz(el, val) {
+  document.querySelectorAll('#time-tz .time-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); timeTz=val; updateTimeDisplay();
+}
+function updateTimeDisplay() {
+  const disp = document.getElementById('time-display');
+  const input = document.getElementById('pref-time');
+  if (!timeHour) { disp.textContent='No time selected'; input.value=''; }
+  else {
+    const t = timeHour+(timeMin?':'+timeMin:'')+(timeAmPm?' '+timeAmPm:'')+(timeTz?' '+timeTz:'');
+    disp.textContent = t; input.value = t;
+  }
+  autoSave();
+}
+
+
+// ── LOCATION COMBOBOX ────────────────────────────────
+const STATE_FLAGS = {
+  'Alabama':'🏛️','Alaska':'🌲','Arizona':'🌵','Arkansas':'💎','California':'🌴',
+  'Colorado':'⛰️','Connecticut':'⚓','Delaware':'🔵','Florida':'🌞','Georgia':'🍑',
+  'Hawaii':'🌺','Idaho':'🥔','Illinois':'🏙️','Indiana':'🏎️','Iowa':'🌽',
+  'Kansas':'🌾','Kentucky':'🐎','Louisiana':'🎷','Maine':'🦞','Maryland':'🦀',
+  'Massachusetts':'🦃','Michigan':'🚗','Minnesota':'❄️','Mississippi':'🎵','Missouri':'🌉',
+  'Montana':'🏔️','Nebraska':'🌽','Nevada':'🎰','New Hampshire':'🍁','New Jersey':'🗽',
+  'New Mexico':'🌶️','New York':'🗽','North Carolina':'🏔️','North Dakota':'🌾',
+  'Ohio':'🔴','Oklahoma':'🌪️','Oregon':'🌲','Pennsylvania':'🔔','Rhode Island':'⚓',
+  'South Carolina':'🌴','South Dakota':'🦅','Tennessee':'🎸','Texas':'⭐',
+  'Utah':'🏜️','Vermont':'🍁','Virginia':'🦅','Washington':'☕','West Virginia':'⛏️',
+  'Wisconsin':'🧀','Wyoming':'🦬'
+};
+
+const US_CITIES = {
+  'Alabama':['Auburn','Birmingham','Dothan','Gadsden','Huntsville','Mobile','Montgomery','Tuscaloosa'],
+  'Alaska':['Anchorage','Fairbanks','Juneau','Kenai','Ketchikan','Sitka','Wasilla'],
+  'Arizona':['Chandler','Flagstaff','Gilbert','Glendale','Mesa','Peoria','Phoenix','Scottsdale','Tempe','Tucson','Yuma'],
+  'Arkansas':['Conway','Fayetteville','Fort Smith','Jonesboro','Little Rock','North Little Rock','Pine Bluff','Springdale'],
+  'California':['Anaheim','Bakersfield','Chula Vista','Fresno','Irvine','Long Beach','Los Angeles','Oakland','Riverside','Sacramento','San Diego','San Francisco','San Jose','Santa Ana','Stockton'],
+  'Colorado':['Aurora','Boulder','Colorado Springs','Denver','Fort Collins','Lakewood','Pueblo','Thornton'],
+  'Connecticut':['Bridgeport','Greenwich','Hartford','New Haven','Norwalk','Stamford','Waterbury'],
+  'Delaware':['Dover','Newark','Wilmington'],
+  'Florida':['Cape Coral','Fort Lauderdale','Gainesville','Hialeah','Jacksonville','Miami','Orlando','Pembroke Pines','Port St. Lucie','St. Petersburg','Tallahassee','Tampa'],
+  'Georgia':['Albany','Athens','Atlanta','Augusta','Columbus','Macon','Roswell','Savannah'],
+  'Hawaii':['Hilo','Honolulu','Kailua','Kaneohe','Pearl City'],
+  'Idaho':['Boise','Caldwell','Idaho Falls','Meridian','Nampa','Pocatello','Twin Falls'],
+  'Illinois':['Aurora','Chicago','Elgin','Joliet','Naperville','Peoria','Rockford','Springfield'],
+  'Indiana':['Bloomington','Carmel','Evansville','Fort Wayne','Gary','Indianapolis','South Bend'],
+  'Iowa':['Cedar Rapids','Council Bluffs','Davenport','Des Moines','Iowa City','Sioux City','Waterloo'],
+  'Kansas':['Kansas City','Lawrence','Olathe','Overland Park','Topeka','Wichita'],
+  'Kentucky':['Bowling Green','Covington','Lexington','Louisville','Owensboro'],
+  'Louisiana':['Baton Rouge','Lafayette','Lake Charles','Monroe','New Orleans','Shreveport'],
+  'Maine':['Auburn','Augusta','Bangor','Lewiston','Portland'],
+  'Maryland':['Annapolis','Baltimore','Columbia','Frederick','Gaithersburg','Rockville'],
+  'Massachusetts':['Boston','Brockton','Cambridge','Lowell','New Bedford','Springfield','Worcester'],
+  'Michigan':['Ann Arbor','Detroit','Flint','Grand Rapids','Kalamazoo','Lansing','Livonia','Sterling Heights'],
+  'Minnesota':['Bloomington','Brooklyn Park','Duluth','Minneapolis','Rochester','St. Paul'],
+  'Mississippi':['Biloxi','Gulfport','Hattiesburg','Jackson','Meridian','Southaven'],
+  'Missouri':['Columbia','Independence','Kansas City','Springfield','St. Joseph','St. Louis'],
+  'Montana':['Billings','Bozeman','Great Falls','Helena','Missoula'],
+  'Nebraska':['Bellevue','Lincoln','Omaha'],
+  'Nevada':['Henderson','Las Vegas','North Las Vegas','Reno','Sparks'],
+  'New Hampshire':['Concord','Dover','Manchester','Nashua'],
+  'New Jersey':['Elizabeth','Jersey City','Newark','Paterson','Trenton'],
+  'New Mexico':['Albuquerque','Las Cruces','Rio Rancho','Roswell','Santa Fe'],
+  'New York':['Albany','Bronx','Brooklyn','Buffalo','Manhattan','Queens','Rochester','Staten Island','Syracuse','Yonkers'],
+  'North Carolina':['Asheville','Cary','Chapel Hill','Charlotte','Durham','Fayetteville','Greensboro','Raleigh','Wilmington','Winston-Salem'],
+  'North Dakota':['Bismarck','Fargo','Grand Forks','Minot'],
+  'Ohio':['Akron','Cincinnati','Cleveland','Columbus','Dayton','Toledo'],
+  'Oklahoma':['Broken Arrow','Edmond','Lawton','Norman','Oklahoma City','Tulsa'],
+  'Oregon':['Beaverton','Bend','Eugene','Gresham','Hillsboro','Portland','Salem'],
+  'Pennsylvania':['Allentown','Erie','Philadelphia','Pittsburgh','Reading','Scranton'],
+  'Rhode Island':['Cranston','Pawtucket','Providence','Warwick','Woonsocket'],
+  'South Carolina':['Charleston','Columbia','Greenville','Mount Pleasant','Rock Hill','Spartanburg'],
+  'South Dakota':['Aberdeen','Rapid City','Sioux Falls'],
+  'Tennessee':['Chattanooga','Clarksville','Knoxville','Memphis','Murfreesboro','Nashville'],
+  'Texas':['Arlington','Austin','Corpus Christi','Dallas','El Paso','Fort Worth','Garland','Houston','Irving','Laredo','Lubbock','Plano','San Antonio'],
+  'Utah':['Ogden','Provo','Salt Lake City','Sandy','West Jordan','West Valley City'],
+  'Vermont':['Burlington','Montpelier','Rutland'],
+  'Virginia':['Alexandria','Arlington','Chesapeake','Norfolk','Richmond','Roanoke','Virginia Beach'],
+  'Washington':['Bellevue','Everett','Kent','Seattle','Spokane','Tacoma','Vancouver'],
+  'West Virginia':['Charleston','Huntington','Morgantown','Parkersburg'],
+  'Wisconsin':['Green Bay','Kenosha','Madison','Milwaukee','Racine'],
+  'Wyoming':['Casper','Cheyenne','Gillette','Laramie']
+};
+
+let locSelected = '';
+let locIsOpen = false;
+
+function initLocAccordion() {
+  locBuildList('');
+}
+
+function locToggle() {
+  locIsOpen ? locClose() : locOpen();
+}
+
+function locOpen() {
+  locIsOpen = true;
+  document.getElementById('loc-wrap').classList.add('open');
+  document.getElementById('loc-filter-input').value = '';
+  locBuildList('');
+  setTimeout(() => document.getElementById('loc-filter-input').focus(), 60);
+  document.addEventListener('mousedown', locOutside, true);
+}
+
+function locClose() {
+  locIsOpen = false;
+  document.getElementById('loc-wrap').classList.remove('open');
+  document.removeEventListener('mousedown', locOutside, true);
+}
+
+function locOutside(e) {
+  if (!document.getElementById('loc-wrap').contains(e.target)) locClose();
+}
+
+function locFilter(val) {
+  locBuildList(val.toLowerCase());
+}
+
+function locBuildList(filter) {
+  const list = document.getElementById('loc-list');
+  list.innerHTML = '';
+  let found = false;
+  Object.keys(US_CITIES).sort().forEach(state => {
+    const all = US_CITIES[state];
+    const stateHit = !filter || state.toLowerCase().includes(filter);
+    const cities = stateHit ? all : all.filter(c => c.toLowerCase().includes(filter));
+    if (!cities.length) return;
+    found = true;
+    const row = document.createElement('div');
+    row.className = 'loc-state-row';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'loc-state-btn' + (filter ? ' open' : '');
+    btn.innerHTML =
+      '<span class="loc-state-left">' +
+        '<span class="loc-state-flag">' + (STATE_FLAGS[state]||'📍') + '</span>' +
+        '<span>' + state + '</span>' +
+        '<span class="loc-state-count">' + cities.length + ' cities</span>' +
+      '</span>' +
+      '<span class="loc-state-chev">▼</span>';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'loc-cities-wrap';
+    const inner = document.createElement('div');
+    inner.className = 'loc-cities-inner';
+
+    cities.forEach(city => {
+      const cb = document.createElement('button');
+      cb.type = 'button';
+      const full = city + ', ' + state;
+      cb.className = 'loc-city-btn' + (locSelected === full ? ' selected' : '');
+      cb.textContent = city;
+      cb.onclick = () => locPick(full);
+      inner.appendChild(cb);
+    });
+
+    wrap.appendChild(inner);
+    if (filter) wrap.style.maxHeight = (cities.length * 34 + 20) + 'px';
+
+    btn.onclick = () => {
+      const isOpen = btn.classList.contains('open');
+      btn.classList.toggle('open', !isOpen);
+      wrap.style.maxHeight = isOpen ? '0' : wrap.scrollHeight + 'px';
+    };
+
+    row.appendChild(btn);
+    row.appendChild(wrap);
+    list.appendChild(row);
+  });
+
+  if (!found) {
+    const msg = document.createElement('div');
+    msg.className = 'loc-no-results';
+    msg.textContent = 'No matches found';
+    list.appendChild(msg);
+  }
+}
+
+function locPick(val) {
+  locSelected = val;
+  document.getElementById('location').value = val;
+  const txt = document.getElementById('loc-trigger-text');
+  txt.textContent = '📍 ' + val;
+  txt.classList.add('chosen');
+  locClose();
+  autoSave();
+}
+
+function locClear() {
+  locSelected = '';
+  document.getElementById('location').value = '';
+  const txt = document.getElementById('loc-trigger-text');
+  txt.textContent = 'Select city & state...';
+  txt.classList.remove('chosen');
+  locBuildList('');
+  autoSave();
+}
+
+buildTTXMatrix();
+initCal();
+updateProgress();
+</script>
+</body>
+</html>
